@@ -3,89 +3,63 @@
  <img src="https://vaadin.com/images/hero-reindeer.svg" width="200" height="200" /></a>
 </center>
 
-# HelloWorld - Vaadin - Ramp up in a second.
-A nano project to start a Vaadin project. Perfect for Micro-UIs packed as fat jar in a docker image.
-This will be used in some  of the tutorial implementations.
+# Flow  Dependency Injection with CDI (Weld)
+This is the demo code for the tutorial 
+[https://vaadin.com/tutorials/dependency-injection-cdi](https://vaadin.com/tutorials/dependency-injection-cdi)
 
-> All tutorials are available under [https://vaadin.com/tutorials](https://vaadin.com/tutorials)
+## Demo running on a local Docker
+If you want to run this demo on your local machine, you can try out the 
+docker image that is provided. 
+To run this type:
 
-## target of this project
-The target of this project is a minimal rampup time for a first hello world.
-Why we need one more HelloWorld? Well, the answer is quite easy. 
-If you have to try something out, or you want to make a small POC to present something,
-there is no time and budget to create a demo project.
-You don´t want to copy paste all small things together.
-Here you will get a HelloWorld-Project that will give you all in a second.
+```bash
+docker pull vaadintutorials/flow-dependency-injection-cdi
+docker run -p8899:8899 --name demo vaadintutorials/flow-dependency-injection-cdi
+```
+After the images/container started you can try this demo with your local browser
+by calling the following URL [http://localhost:8899](http://localhost:8899)
 
-Clone the repo and start editing the class ```VaadinApp``` or ```BasicTestUIRunner```.
-Nothing more. 
+### cleaning up after trying
+After you used this docker image you can clean up your system with the following commands.
 
-## How does it work?
-This project will not use any additional maven plugin or technology.
-
-Here we are using the plain **meecrowave** as Servlet-Container.
-[http://openwebbeans.apache.org/meecrowave/index.html](http://openwebbeans.apache.org/meecrowave/index.html)
-
-But let´s start from the beginning.
-
-## Start the Servlet-Container (Java)
-The class ```BasicTestUIRunner``` will ramp up the Container.
-
-Here all the basic stuff is done. The start will init. a ServletContainer at port **8080**.
-If you want to use a random port, use ```randomHttpPort()``` instead of ```setHttpPort(8080);```
-The WebApp will deployed as **ROOT.war**. 
-
-```java
-public class BasicTestUIRunner {
-  private BasicTestUIRunner() {
-  }
-
-  public static void main(String[] args) {
-    new Meecrowave(new Meecrowave.Builder() {
-      {
-//        randomHttpPort();
-        setHttpPort(8080);
-        setTomcatScanning(true);
-        setTomcatAutoSetup(false);
-        setHttp2(true);
-      }
-    })
-        .bake()
-        .await();
-  }
-}
+```bash
+docker rm demo
+docker image rm vaadintutorials/flow-dependency-injection-cdi
 ```
 
-After this you can start the app invoking the main-method.
+### building this Docker-image by yourself
+If you want to build this docker image on your machine you can use the provided **Dockerfile**
 
-## The UI itself
-The UI itself is quite easy. 
-There is only a button you can click.
-For every click, the counter will be increased.
-For more information about the routing (**@Route(""")**), have a look at the orig documentation
-[https://vaadin.com/docs/v10/flow/routing/tutorial-routing-annotation.html](https://vaadin.com/docs/v10/flow/routing/tutorial-routing-annotation.html)
-
-
-```java
-@Route("")
-public class VaadinApp extends Composite<Div> implements HasLogger {
-
-  private final Button         btnClickMe   = new Button("click me");
-  private final Span           lbClickCount = new Span("0");
-  private final VerticalLayout layout       = new VerticalLayout(btnClickMe, lbClickCount);
-
-  private int clickcount = 0;
-
-  public VaadinApp() {
-    btnClickMe.addClickListener(event -> lbClickCount.setText(valueOf(++clickcount)));
-
-    //set the main Component
-    logger().info("setting now the main ui content..");
-    getContent().add(layout);
-
-  }
-}
+```bash
+docker build -t vaadintutorials/flow-dependency-injection-cdi .
 ```
+
+## Demo running on Heroku
+On Heroku you find a deployed version.
+[https://flow-layout-app-layout-vaadin.herokuapp.com/](https://flow-layout-app-layout-vaadin.herokuapp.com/)
+
+## How to build this locally?
+If you want to build this demo check out the repository and invoke
+the command: **mvn clean package -Dvaadin-install-nodejs**
+
+Together with this demo, 
+you will find some jUnit5 Selenium UI Tests based on **[Testbench](https://vaadin.com/testbench)** 
+To get this running you need a license, or you can request a trial from [https://vaadin.com/trial](https://vaadin.com/trial)
+
+To activate the Testbench tests during the maven build process set the environment variable **TESTBENCH** with the value **on**
+With your IDE you can run every test without setting this variable.
+
+## How to prepare a vaadin app for Heroku
+To support the Heroku pipeline we need a few preparations.
+1) the app must be able to get a configured port for the http port during the start up
+1) add the shade plugin to create a fat jar
+1) create the file **Procfile** and add the line 
+    ``web: java -jar target/vaadin-app.jar -port $PORT```
+    * **web** - to activate the web profile
+    * **-jar** - define what fat jar must be started
+    * **-port** make the dynamic associated port available for the app
+1) add a file **settings.xml** to configure the maven build process
+
 
 Happy Coding.
 
