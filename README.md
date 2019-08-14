@@ -36,7 +36,7 @@ docker build -t vaadintutorials/flow-dependency-injection-cdi .
 
 ## Demo running on Heroku
 On Heroku you find a deployed version.
-[https://flow-layout-app-layout-vaadin.herokuapp.com/](https://flow-layout-app-layout-vaadin.herokuapp.com/)
+[https://flow-dependency-injection-cdi.herokuapp.com/](https://flow-dependency-injection-cdi.herokuapp.com/)
 
 ## How to build this locally?
 If you want to build this demo check out the repository and invoke
